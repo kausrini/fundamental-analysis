@@ -10,6 +10,7 @@ import os
 from models import Company
 from models import Document
 
+
 # Retrieve all the filing_type documents for the company with the stock_ticker (upto 100 most recent documents)
 # The details returned by this method is used to create the EDGAR urls which contain the actual filed document.
 def obtain_document_details(stock_ticker, filing_type):
@@ -38,9 +39,6 @@ def obtain_document_details(stock_ticker, filing_type):
 # Obtain the specified document from EDGAR
 def obtain_document(document):
 
-    #base_document_uri = 'https://www.sec.gov/Archives/edgar/data/{cik}/{acc_no}/Financial_Report.xlsx'
-    #document_uri = base_document_uri.format(cik=document.company.cik, acc_no=document.get_accession_number())
-
     company_url = 'https://www.sec.gov/cgi-bin/viewer?action=view&cik={cik}&accession_number={acc_no}'.format(
         cik=document.company.cik, acc_no=document.accession_number_str)
     res = requests.get(company_url)
@@ -62,7 +60,7 @@ def obtain_document(document):
     response = requests.get(document_uri)
     downloaded_reports_path = pathlib.Path.cwd() / 'reports' / 'downloaded_filings'
     company_path = downloaded_reports_path / document.company.ticker.upper()
-    company_path.mkdir(parents=False, exist_ok=True)
+    company_path.mkdir(parents=True, exist_ok=True)
     filing_type_path = company_path / document.filing_type
     filing_type_path.mkdir(parents=False, exist_ok=True)
     document_path = filing_type_path / file_name
@@ -83,8 +81,6 @@ def fetch_sec_filings(stocks, filing_type):
 
 if __name__ == '__main__':
     filing_type = '10-K'
-    stocks = ['pypl', 'amzn', 'aapl']
+    stocks = ['pypl', 'mtn', 'aapl']
     fetch_sec_filings(stocks, filing_type)
-    #res = requests.get('https://www.sec.gov/cgi-bin/viewer?action=view&cik=1018724&accession_number=0001193125-13-028520')
-    #page_data = bs4.BeautifulSoup(res.text, "html.parser")
-    #url = page_data.find_all('a', class_='xbrlviewer', string='View Excel Document')[0]['href']
+
